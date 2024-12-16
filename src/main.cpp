@@ -1,8 +1,6 @@
 #define BLYNK_PRINT Serial
 #define BLYNK_AUTH_TOKEN "k8xNIvWelw4RiOuOeDhq2e1W64h0NCf3"
 
-
-
 #ifdef ESP32
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -16,7 +14,7 @@
 #define BOT_TOKEN "6553250052:AAF8xEp0zIXihw3qNOgcI87x0TJIXkWrsOI"
 #define DEGREEC " °C"
 #define DEGREEF " °F"
-#define LED_BUILTIN 12
+#define LED_BUILTIN 2
 
 // Add up to five different chat IDs
 String chat_ids[] = {"6269142419", "6276810520", "1919990541"};
