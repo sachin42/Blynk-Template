@@ -17,7 +17,7 @@
 #define LED_BUILTIN 2
 
 // Add up to five different chat IDs
-String chat_ids[] = {"6269142419", "6276810520", "1919990541"};
+String chat_ids[] = {"1919990541"};
 
 // WiFi credentials
 char ssid[] = "Sachin";
@@ -34,7 +34,8 @@ BLYNK_WRITE(V0)
 }
 
 #ifdef ESP8266
-float temperatureRead() {
+float temperatureRead()
+{
   return random(32.2, 52.6);
 }
 #endif
@@ -79,6 +80,8 @@ void sendData()
   String name;
   if (bot.getUpdates(message, chat_id, name))
   {
+    // Uncoment code block below if you want to print incomming telegram massages.
+
     // Serial.print("User name :");
     // Serial.println(name);
     // Serial.print("Chat ID :");
