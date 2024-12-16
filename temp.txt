@@ -1,0 +1,323 @@
+#define BLYNK_PRINT Serial
+#define BLYNK_AUTH_TOKEN "k8xNIvWelw4RiOuOeDhq2e1W64h0NCf3"
+
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <BlynkSimpleEsp32.h>
+
+#define BOT_TOKEN "6553250052:AAF8xEp0zIXihw3qNOgcI87x0TJIXkWrsOI"
+#define BOT_MTBS 1000UL
+WiFiClientSecure secured_client;
+UniversalTelegramBot bot(BOT_TOKEN, secured_client);
+unsigned long bot_lasttime;
+bool Start = false;
+
+String chat_id[] = {"1919990541", "6269142419"}; // add upto five different chat ids.
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "ElectrocusNew";
+char pass[] = "ECS@123.";
+
+WidgetTerminal terminal(V1);
+
+void handleNewMessages(int numNewMessages)
+{
+  Serial.println("handleNewMessages");
+  Serial.println(String(numNewMessages));
+
+  for (int i = 0; i < numNewMessages; i++)
+  {
+    String chat_id = bot.messages[i].chat_id;
+    String text = bot.messages[i].text;
+
+    String from_name = bot.messages[i].from_name;
+    if (from_name == "")
+      from_name = "Guest";
+
+    if (text == "/temp")
+    {
+      // Read the internal temperature
+      float temperature = temperatureRead();
+      bot.sendMessage(chat_id, "Current CPU temperature: " + String(temperature) + " °C");
+    }
+
+    if (text == "/start")
+    {
+      String welcome = "Welcome to Local Blynk Server testing, " + from_name + ".\n";
+      bot.sendMessage(chat_id, welcome);
+    }
+  }
+}
+
+void telegramTask(void *pvParameters)
+{
+  (void)pvParameters;
+
+  while (true)
+  {
+    if (millis() - bot_lasttime > BOT_MTBS)
+    {
+      int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+      while (numNewMessages)
+      {
+        Serial.println("got response");
+        handleNewMessages(numNewMessages);
+        numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+      }
+
+      bot_lasttime = millis();
+    }
+    vTaskDelay(50);
+  }
+}
+
+float readTemperature()
+{
+  return 25.5;
+}
+
+BLYNK_WRITE(V0)
+{
+  digitalWrite(2, param.asInt());
+}
+
+BLYNK_WRITE(V1)
+{
+  // Get the string value from the Terminal widget
+  String receivedCommand = param.asStr();
+
+  // Process received command
+  terminal.print("Received Command: ");
+  terminal.println(receivedCommand);
+
+  // Example command processing
+  if (receivedCommand == "help")
+  {
+    terminal.println("Available Commands:");
+    terminal.println("- temp: Get current temperature");
+    terminal.println("- status: Check device status");
+  }
+  else if (receivedCommand == "temp")
+  {
+    float temperature = readTemperature();
+    terminal.print("Current Temperature: ");
+    terminal.print(temperature);
+    terminal.println(" °C");
+  }
+  else if (receivedCommand == "status")
+  {
+    terminal.println("Device Online");
+    terminal.print("WiFi Signal Strength: ");
+    terminal.print(WiFi.RSSI());
+    terminal.println(" dBm");
+  }
+  else
+  {
+    terminal.println("Unknown Command. Type 'help' for assistance.");
+  }
+
+  // Don't forget to flush!
+  terminal.flush();
+}
+
+void setup()
+{
+  // Debug console
+  Serial.begin(115200);
+  pinMode(2, OUTPUT);
+  Blynk.connectWiFi(ssid, pass);
+  secured_client.setCACert(TELEGRAM_CERTIFICATE_ROOT); // Add root certificate for api.telegram.org
+  Blynk.config(BLYNK_AUTH_TOKEN, "protocol.electrocus.com", 8080);
+  // Blynk.config(BLYNK_AUTH_TOKEN, IPAddress(122,175,189,210), 8080);
+
+    Serial.print("Retrieving time: ");
+  configTime(0, 0, "pool.ntp.org"); // get UTC time via NTP
+  time_t now = time(nullptr);
+  while (now < 24 * 3600)
+  {
+    Serial.print(".");
+    delay(100);
+    now = time(nullptr);
+  }
+  Serial.println(now);
+
+  while (!secured_client.connected())
+  {
+    /* code */
+  }
+  
+  xTaskCreatePinnedToCore(telegramTask, "telegramTask", configMINIMAL_STACK_SIZE * 10, NULL, 1, NULL, 1);
+
+  terminal.clear();
+  terminal.println("Blynk Terminal Widget Connected!");
+  terminal.println("------------------------------");
+  terminal.flush();
+
+  for (int i = 0; i < sizeof(chat_id); i++)
+  {
+    bot.sendMessage(chat_id[i], "Device started.");
+  }
+}
+
+void loop()
+{
+  Blynk.run();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************************
+    A telegram bot for your ESP32 that demonstrates a bot
+    that show bot action message
+
+    Parts:
+    ESP32 D1 Mini stlye Dev board* - http://s.click.aliexpress.com/e/C6ds4my
+    (or any ESP32 board)
+
+      = Affilate
+
+    If you find what I do useful and would like to support me,
+    please consider becoming a sponsor on Github
+    https://github.com/sponsors/witnessmenow/
+
+    Example originally written by Vadim Sinitski 
+
+    Library written by Brian Lough
+    YouTube: https://www.youtube.com/brianlough
+    Tindie: https://www.tindie.com/stores/brianlough/
+    Twitter: https://twitter.com/witnessmenow
+ *******************************************************************/
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+
+// Wifi network station credentials
+#define WIFI_SSID "antivirus 4G"
+#define WIFI_PASSWORD "yellowpages40"
+// Telegram BOT Token (Get from Botfather)
+#define BOT_TOKEN "6553250052:AAF8xEp0zIXihw3qNOgcI87x0TJIXkWrsOI"
+
+const unsigned long BOT_MTBS = 1000; // mean time between scan messages
+
+WiFiClientSecure secured_client;
+UniversalTelegramBot bot(BOT_TOKEN, secured_client);
+unsigned long bot_lasttime;          // last time messages' scan has been done
+bool Start = false;
+
+void handleNewMessages(int numNewMessages)
+{
+  Serial.println("handleNewMessages");
+  Serial.println(String(numNewMessages));
+
+  for (int i = 0; i < numNewMessages; i++)
+  {
+    String chat_id = bot.messages[i].chat_id;
+    String text = bot.messages[i].text;
+
+    String from_name = bot.messages[i].from_name;
+    if (from_name == "")
+      from_name = "Guest";
+
+    if (text == "/send_test_action")
+    {
+      bot.sendChatAction(chat_id, "typing");
+      delay(4000);
+      bot.sendMessage(chat_id, "Did you see the action message?");
+
+      // You can't use own message, just choose from one of bellow
+
+      //typing for text messages
+      //upload_photo for photos
+      //record_video or upload_video for videos
+      //record_audio or upload_audio for audio files
+      //upload_document for general files
+      //find_location for location data
+
+      //more info here - https://core.telegram.org/bots/api#sendchataction
+    }
+
+    if (text == "/start")
+    {
+      String welcome = "Welcome to Universal Arduino Telegram Bot library, " + from_name + ".\n";
+      welcome += "This is Chat Action Bot example.\n\n";
+      welcome += "/send_test_action : to send test chat action message\n";
+      bot.sendMessage(chat_id, welcome);
+    }
+  }
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println();
+
+  // attempt to connect to Wifi network:
+  Serial.print("Connecting to Wifi SSID ");
+  Serial.print(WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  secured_client.setCACert(TELEGRAM_CERTIFICATE_ROOT); // Add root certificate for api.telegram.org
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.print("\nWiFi connected. IP address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.print("Retrieving time: ");
+  configTime(0, 0, "pool.ntp.org"); // get UTC time via NTP
+  time_t now = time(nullptr);
+  while (now < 24 * 3600)
+  {
+    Serial.print(".");
+    delay(100);
+    now = time(nullptr);
+  }
+  Serial.println(now);
+}
+
+void loop()
+{
+  if (millis() - bot_lasttime > BOT_MTBS)
+  {
+    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+    while (numNewMessages)
+    {
+      Serial.println("got response");
+      handleNewMessages(numNewMessages);
+      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    }
+
+    bot_lasttime = millis();
+  }
+}

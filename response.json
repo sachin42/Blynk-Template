@@ -1,0 +1,74 @@
+{
+    "ok": true,
+    "result": [
+        {
+            "update_id": 116825593,
+            "message": {
+                "message_id": 1338,
+                "from": {
+                    "id": 1919990541,
+                    "is_bot": false,
+                    "first_name": "Sachin",
+                    "last_name": "Kushawaha",
+                    "username": "hackerss420",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": 1919990541,
+                    "first_name": "Sachin",
+                    "last_name": "Kushawaha",
+                    "username": "hackerss420",
+                    "type": "private"
+                },
+                "date": 1734339017,
+                "text": "/temp",
+                "entities": [
+                    {
+                        "offset": 0,
+                        "length": 5,
+                        "type": "bot_command"
+                    }
+                ]
+            }
+        }
+    ]
+}
+
+{
+    "ok": true,
+    "result": [
+        {
+            "update_id": 116825594,
+            "message": {
+                "message_id": 1340,
+                "from": {
+                    "id": 6269142419,
+                    "is_bot": false,
+                    "first_name": "Electrocus",
+                    "last_name": "Solution",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": 6269142419,
+                    "first_name": "Electrocus",
+                    "last_name": "Solution",
+                    "type": "private"
+                },
+                "date": 1734339028,
+                "text": "/temp",
+                "entities": [
+                    {
+                        "offset": 0,
+                        "length": 5,
+                        "type": "bot_command"
+                    }
+                ]
+            }
+        }
+    ]
+}
+
+
+
+
+
