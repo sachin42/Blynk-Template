@@ -39,7 +39,7 @@ float temperatureRead()
   return random(32.2, 52.6);
 }
 #endif
-
+ 
 BLYNK_WRITE(V1)
 {
   String receivedCommand = param.asStr();
