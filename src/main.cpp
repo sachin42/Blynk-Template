@@ -20,18 +20,13 @@
 String chat_ids[] = {"1919990541"};
 
 // WiFi credentials
-char ssid[] = "Sachin";
+char ssid[] = "project";
 char pass[] = "12345678";
 
-WidgetTerminal terminal(V1);
+WidgetTerminal terminal(V0);
 TeleBot bot(BOT_TOKEN);
 
 BlynkTimer timer;
-
-BLYNK_WRITE(V0)
-{
-  digitalWrite(LED_BUILTIN, param.asInt());
-}
 
 #ifdef ESP8266
 float temperatureRead()
@@ -39,8 +34,8 @@ float temperatureRead()
   return random(32.2, 52.6);
 }
 #endif
- 
-BLYNK_WRITE(V1)
+
+BLYNK_WRITE(V0)
 {
   String receivedCommand = param.asStr();
 
@@ -96,6 +91,27 @@ void sendData()
   }
 }
 
+void checkBlynkStatus()
+{
+  bool isconnected = Blynk.connected();
+  if (isconnected == false)
+  {
+#ifdef ESP32
+    digitalWrite(LED_BUILTIN, LOW); // Turn off WiFi LED
+#elif ESP8266
+    digitalWrite(LED_BUILTIN, HIGH); // Turn off WiFi LED
+#endif
+  }
+  if (isconnected == true)
+  {
+#ifdef ESP32
+    digitalWrite(LED_BUILTIN, HIGH); // Turn on WiFi LED
+#elif ESP8266
+    digitalWrite(LED_BUILTIN, LOW); // Turn on WiFi LED
+#endif
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -115,6 +131,7 @@ void setup()
   Serial.println(success);
 
   timer.setInterval(10000UL, sendData);
+  timer.setInterval(5000UL, checkBlynkStatus);
 }
 
 void loop()
