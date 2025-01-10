@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-#define BLYNK_AUTH_TOKEN "k8xNIvWelw4RiOuOeDhq2e1W64h0NCf3"
+#define BLYNK_AUTH_TOKEN ""
 
 #ifdef ESP32
 #include <WiFi.h>
