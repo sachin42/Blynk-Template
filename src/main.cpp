@@ -68,7 +68,7 @@ BLYNK_WRITE(V0)
   terminal.flush();
 }
 
-void sendData()
+void polling()
 {
   String message;
   String chat_id;
@@ -130,7 +130,7 @@ void setup()
   Serial.print("Sccess Count :");
   Serial.println(success);
 
-  timer.setInterval(10000UL, sendData);
+  timer.setInterval(10000UL, polling);
   timer.setInterval(5000UL, checkBlynkStatus);
 }
 
