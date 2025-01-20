@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-#define BLYNK_AUTH_TOKEN ""
+#define BLYNK_AUTH_TOKEN "w4AWMz2bsSdqvz_e8w13XtUeF8mpnhh1"
 
 #ifdef ESP32
 #include <WiFi.h>
@@ -34,6 +34,12 @@ float temperatureRead()
   return random(32.2, 52.6);
 }
 #endif
+
+BLYNK_WRITE(V1)
+{
+  digitalWrite(4,param.asInt());
+  Serial.println(param.asInt());
+}
 
 BLYNK_WRITE(V0)
 {
@@ -116,6 +122,8 @@ void setup()
 {
   Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  pinMode(4, OUTPUT);
 
   // Connect to Blynk
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, "protocol.electrocus.com", 8080);
