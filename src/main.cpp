@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-#define BLYNK_AUTH_TOKEN ""
+#define BLYNK_AUTH_TOKEN "4huy-J3UAzCmrBkz-z_Mprb5UR1a6t1z"
 
 #ifdef ESP32
 #include <WiFi.h>
@@ -60,6 +60,16 @@ BLYNK_WRITE(V0)
     terminal.print(WiFi.RSSI());
     terminal.println(" dBm");
   }
+  else if (receivedCommand == "restart")
+  {
+    terminal.println("System Restarting");
+    delay(1000);
+    ESP.restart();
+  }
+  else if (receivedCommand == "clear")
+  {
+    terminal.clear();
+  }
   else
   {
     terminal.println("Unknown Command. Type 'help' for assistance.");
@@ -88,6 +98,11 @@ void polling()
       bot.sendMessage(chat_id, "Welcome");
     else if (message.equals("/temp"))
       bot.sendMessage(chat_id, String(temperatureRead(), 2) + DEGREEC);
+    else if (message.equals("/restart")){
+      bot.sendMessage(chat_id, "System Restarting");
+      delay(1000);
+      ESP.restart();
+    }
   }
 }
 
