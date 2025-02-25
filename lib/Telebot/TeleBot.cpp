@@ -2,6 +2,35 @@
 
 TeleBot::TeleBot(String token) : _token(token), _lastUpdateId(0) {}
 
+String urlEncode(String str)
+{
+  String encodedString = "";
+  char c;
+  char buf[3];
+  for (size_t i = 0; i < str.length(); i++)
+  {
+    c = str.charAt(i);
+    if (c == ' ')
+    {
+      encodedString += "%20"; // Replace spaces
+    }
+    else if (c == '\n')
+    {
+      encodedString += "%0A"; // Replace newlines
+    }
+    else if (isalnum(c))
+    {
+      encodedString += c; // Keep letters and numbers
+    }
+    else
+    {
+      sprintf(buf, "%%%02X", c); // Encode special characters
+      encodedString += buf;
+    }
+  }
+  return encodedString;
+}
+
 bool TeleBot::sendMessage(String chat_id, String message)
 {
   if (WiFi.status() != WL_CONNECTED)
@@ -10,8 +39,9 @@ bool TeleBot::sendMessage(String chat_id, String message)
     return false;
   }
 
+  String newmessage = urlEncode(message);
   HTTPClient client;
-  String url = "https://api.telegram.org/bot" + _token + "/sendMessage?chat_id=" + chat_id + "&text=" + message;
+  String url = "https://api.telegram.org/bot" + _token + "/sendMessage?chat_id=" + chat_id + "&text=" + newmessage;
 #ifdef ESP32
   client.begin(url);
 #elif ESP8266
