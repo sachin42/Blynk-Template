@@ -16,7 +16,9 @@
 #define BOT_TOKEN "6553250052:AAF8xEp0zIXihw3qNOgcI87x0TJIXkWrsOI"
 #define DEGREEC " °C"
 #define DEGREEF " °F"
+#ifndef LED_BUILTIN
 #define LED_BUILTIN 2
+#endif
 
 // WiFi credentials
 char ssid[] = "project";
