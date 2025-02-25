@@ -1,8 +1,3 @@
-
-
-
-
-
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "Blynk/BlynkHandlers.h"
@@ -16,8 +11,6 @@ String chat_ids[MAX_CHAT_IDS];  // Array to store chat IDs
 
 bool isFirstRun = false; // Flag to check if EEPROM is empty
 int chatIdCount = 0;     // Tracks number of stored chat IDs
-
-
 
 // Function to read a string from EEPROM
 String readStringFromEEPROM(int startAddr)
