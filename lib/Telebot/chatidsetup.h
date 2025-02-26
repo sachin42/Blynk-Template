@@ -39,6 +39,7 @@ void writeStringToEEPROM(int startAddr, String data)
 
 void eraseChatIds()
 {
+  EEPROM.begin(EEPROM_SIZE);
   Serial.println("Erasing all chat IDs from EEPROM...");
 
   for (int i = 0; i < MAX_CHAT_IDS * STRING_SIZE; i++)
@@ -48,7 +49,8 @@ void eraseChatIds()
 
   EEPROM.commit(); // Save changes
   Serial.println("EEPROM erased. Restarting ESP32...");
-
+  EEPROM.end();
+  delay(500);
   ESP.restart(); // Restart ESP32 to reset logic
 }
 

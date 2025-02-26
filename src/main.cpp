@@ -153,6 +153,7 @@ void setup()
     Blynk.run();
     delay(10);
   }
+  EEPROM.end();
 
   int success = bot.sendMessage(chat_ids, chatIdCount, "Device Started");
   Serial.print("Sccess Count :");
