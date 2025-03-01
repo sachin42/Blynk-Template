@@ -6,7 +6,7 @@ String urlEncode(String str)
 {
   String encodedString = "";
   char c;
-  char buf[3];
+  char buf[4];
   for (size_t i = 0; i < str.length(); i++)
   {
     c = str.charAt(i);
@@ -18,13 +18,13 @@ String urlEncode(String str)
     {
       encodedString += "%0A"; // Replace newlines
     }
-    else if (isalnum(c))
+    else if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
     {
       encodedString += c; // Keep letters and numbers
     }
     else
     {
-      sprintf(buf, "%%%02X", c); // Encode special characters
+      sprintf(buf, "%%%02X", (unsigned char)c); // Encode special characters
       encodedString += buf;
     }
   }
