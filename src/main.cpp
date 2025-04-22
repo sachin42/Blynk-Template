@@ -31,6 +31,8 @@ BlynkTimer timer;
 BLYNK_WRITE(V0)
 {
   String receivedCommand = param.asStr();
+  receivedCommand.trim();        // Remove leading and trailing whitespace
+  receivedCommand.toLowerCase(); // Convert to lowercase for case-insensitive comparison
 
   terminal.print("Received Command: ");
   terminal.println(receivedCommand);
@@ -44,7 +46,6 @@ BLYNK_WRITE(V0)
     terminal.println("- status: Check device status");
     terminal.println("- restart: Restart the device");
     terminal.println("- clear: Clear the terminal");
-    terminal.println("- erase: Erase all chat IDs from EEPROM");
   }
 #ifdef ESP32
   else if (receivedCommand == "cpu")
@@ -69,10 +70,6 @@ BLYNK_WRITE(V0)
   else if (receivedCommand == "clear")
   {
     terminal.clear();
-  }
-  else if (receivedCommand == "erase")
-  {
-    eraseChatIds();
   }
   else
   {
@@ -135,7 +132,11 @@ void setup()
 {
   Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
-
+#ifdef ESP32
+  digitalWrite(LED_BUILTIN, LOW); // Turn off WiFi LED
+#elif ESP8266
+  digitalWrite(LED_BUILTIN, HIGH); // Turn off WiFi LED
+#endif
   // Connect to Blynk
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, "protocol.electrocus.com", 8080);
 
@@ -144,16 +145,7 @@ void setup()
   terminal.println("------------------------------");
   terminal.flush();
 
-  EEPROM.begin(EEPROM_SIZE);
-  Serial.println("Reading chat IDs from EEPROM:");
-  checkAndLoadChatIds();
-
-  while (isFirstRun)
-  {
-    Blynk.run();
-    delay(10);
-  }
-  EEPROM.end();
+  loadChatIds(); // Load chat IDs from EEPROM
 
   int success = bot.sendMessage(chat_ids, chatIdCount, "Device Started");
   Serial.print("Sccess Count :");

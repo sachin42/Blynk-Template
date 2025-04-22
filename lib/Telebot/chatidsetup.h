@@ -1,3 +1,6 @@
+#ifndef CHATIDSETUP_H
+#define CHATIDSETUP_H
+
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "Blynk/BlynkHandlers.h"
@@ -103,6 +106,23 @@ void checkAndLoadChatIds()
   }
 }
 
+// This function is called in the setup() function to load chat IDs from EEPROM
+void loadChatIds()
+{
+  WidgetTerminal chatTerminal(V127); // Blynk Terminal widget on Virtual Pin
+  chatTerminal.clear(); // Clear the terminal widget
+  chatTerminal.flush(); // Flush the terminal widget
+  EEPROM.begin(EEPROM_SIZE);
+  checkAndLoadChatIds();
+
+  while (isFirstRun)
+  {
+    Blynk.run();
+    delay(10);
+  }
+  EEPROM.end();
+}
+
 // Function to save all chat IDs to EEPROM and restart ESP32
 void saveAndRestart()
 {
@@ -118,14 +138,51 @@ void saveAndRestart()
   ESP.restart();
 }
 
+// add another chat ID to the list
+void addChatId(String chatId)
+{
+  EEPROM.begin(EEPROM_SIZE);
+  if (chatIdCount < MAX_CHAT_IDS)
+  {
+    chat_ids[chatIdCount] = chatId;
+    chatIdCount++;
+    int addr = (chatIdCount - 1) * STRING_SIZE;
+    writeStringToEEPROM(addr, chatId); // Write new chat ID to EEPROM
+    Serial.printf("Added Chat ID[%d]: %s\n", chatIdCount - 1, chatId.c_str());
+    Blynk.virtualWrite(BLYNK_TERMINAL_PIN, "Added Chat ID: " + chatId + "\n");
+  }
+  else
+  {
+    Serial.println("Max chat IDs reached. Cannot add more.");
+    Blynk.virtualWrite(BLYNK_TERMINAL_PIN, "Max chat IDs reached. Cannot add more.\n");
+  }
+  EEPROM.commit(); // Save changes to EEPROM
+  EEPROM.end();
+}
+
 // Blynk Terminal input handler
 BLYNK_WRITE(BLYNK_TERMINAL_PIN)
 {
-  if (!isFirstRun)
-    return; // Ignore input if chat IDs are already present
-
   String receivedChatID = param.asStr();
   receivedChatID.trim(); // Remove any leading/trailing spaces
+
+  // if recerivedChatID starts with addChatId, add it to the list
+  if (receivedChatID.startsWith("add-"))
+  {
+    String newChatId = receivedChatID.substring(4); // Extract the chat ID after "addChatId-"
+    newChatId.trim();                               // Remove any leading/trailing spaces
+    addChatId(newChatId);
+  }
+
+  else if (receivedChatID.equalsIgnoreCase("erase"))
+  {
+    eraseChatIds(); // Erase all chat IDs from EEPROM
+    Blynk.virtualWrite(BLYNK_TERMINAL_PIN, "All chat IDs erased. Restarting...\n");
+    return;
+  }
+
+  if (!isFirstRun)
+    return; // Ignore input if chat IDs are already present
 
   if (receivedChatID.equalsIgnoreCase("exit"))
   { // Exit and save if user types "exit"
@@ -161,3 +218,5 @@ BLYNK_WRITE(BLYNK_TERMINAL_PIN)
     Blynk.virtualWrite(BLYNK_TERMINAL_PIN, "Chat ID storage is full. Type 'exit' to save & restart.\n");
   }
 }
+
+#endif // CHATIDSETUP_H
