@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "author": "Sachin Kushawaha",
+    "editor": "wokwi",
+    "parts": [
+      {
+        "type": "board-esp32-devkit-c-v4",
+        "id": "esp",
+        "top": 28.8,
+        "left": 62.44,
+        "attrs": { "builder": "esp-idf" }
+      }
+    ],
+    "connections": [ [ "esp:TX", "$serialMonitor:RX", "", [] ], [ "esp:RX", "$serialMonitor:TX", "", [] ] ],
+    "dependencies": {}
+  }

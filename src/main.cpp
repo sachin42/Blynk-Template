@@ -21,8 +21,8 @@
 #endif
 
 // WiFi credentials
-char ssid[] = "project";
-char pass[] = "12345678";
+char ssid[] = "Wokwi-GUEST";
+char pass[] = "";
 
 WidgetTerminal terminal(V0);
 TeleBot bot(BOT_TOKEN);
