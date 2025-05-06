@@ -114,6 +114,9 @@ void loadChatIds()
   chatTerminal.flush(); // Flush the terminal widget
   EEPROM.begin(EEPROM_SIZE);
   checkAndLoadChatIds();
+  chatTerminal.println("add-<chat id> for adding extara chat ids.");
+  chatTerminal.println("erase to erase all chat ids.");
+  chatTerminal.flush();
 
   while (isFirstRun)
   {
@@ -176,8 +179,8 @@ BLYNK_WRITE(BLYNK_TERMINAL_PIN)
 
   else if (receivedChatID.equalsIgnoreCase("erase"))
   {
-    eraseChatIds(); // Erase all chat IDs from EEPROM
     Blynk.virtualWrite(BLYNK_TERMINAL_PIN, "All chat IDs erased. Restarting...\n");
+    eraseChatIds(); // Erase all chat IDs from EEPROM
     return;
   }
 
